@@ -1,0 +1,25 @@
+{
+  "name": "sandbox",
+  "version": "0.0.1",
+  "description": "Sandbox of Nodejs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/fzheng/sandbox.git"
+  },
+  "keywords": [
+    "node"
+  ],
+  "author": "Feng Zheng",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/fzheng/sandbox/issues"
+  },
+  "dependencies": {
+    "express": "~3.4.8",
+    "http-proxy": "~1.0.2"
+  }
+}
