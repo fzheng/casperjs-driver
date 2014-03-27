@@ -1,8 +1,8 @@
 {
-  "name": "sandbox",
+  "name": "CasperjsDriver",
   "version": "0.0.1",
-  "description": "Sandbox of Nodejs",
-  "main": "app.js",
+  "description": "Using node.js to drive casperjs",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,7 +19,8 @@
     "url": "https://github.com/fzheng/sandbox/issues"
   },
   "dependencies": {
-    "express": "~3.4.8",
-    "http-proxy": "~1.0.2"
+    "casperjs": "~1.1.0-beta3",
+    "winston": "~0.7.3",
+    "underscore": "~1.6.0"
   }
 }
