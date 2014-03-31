@@ -38,6 +38,6 @@ module.exports = {
     "117": "",
     "118": "",
     "119": "",
-    "120": "Parent process has terminated"
+    "120": ""
   }
 };

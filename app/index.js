@@ -85,6 +85,6 @@ casper.then(function(){
 });
 
 casper.run(function(){
-  this.echo("elapsed time = " + (new Date().getTime() - this.custom.token) + "ms @" + this.custom.url);
+  this.echo("elapsed time = " + (new Date().getTime() - this.custom.token) + " ms @ " + this.custom.url);
   this.exit();
 });
