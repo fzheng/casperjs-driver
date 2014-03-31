@@ -10,7 +10,7 @@ CasperManager.prototype.run = function(){
 };
 
 CasperManager.prototype.Done = function(){
-  this.echo("Step done");
+  this.casper.echo("Step done");
 };
 
 module.exports = CasperManager;

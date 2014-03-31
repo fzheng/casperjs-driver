@@ -2,7 +2,7 @@
 
 var utils = require('utils');
 var fs = require('fs');
-var __ = require('../vendor/underscore');
+var underscore = require('../vendor/underscore');
 
 /**
  * casperjs starts
@@ -10,11 +10,11 @@ var __ = require('../vendor/underscore');
 var casper = require("casper").create({
   onError: function(self, m){
     casper.echo('Casperjs onError: ' + m);
-    casper.exit(113);
+    casper.exit(102);
   },
   onStepTimeout: function(self, m){
     casper.echo('Casperjs Step timeout: ' + m);
-    casper.exit(113);
+    casper.exit(103);
   }
 });
 
@@ -58,17 +58,20 @@ casper.start().then(function(){
   var args = this.cli.args;
   if(!args || !args.length){
     utils.dump(args);
-    this.die("invalid command line argument", 115);
+    this.die("invalid command line argument", 107);
   }
   try {
-    this.custom = __.extend(this.custom, JSON.parse(args[0]));
+    this.custom = underscore.extend(this.custom, JSON.parse(args[0]));
   } catch(e) {
     this.die("JSON.parse error: " + utils.dump(args[0]), 105);
   }
 });
 
-casper.thenOpen(casper.custom.url, function() {
-  this.echo(this.getTitle());
+casper.then(function(){
+  var _me = this;
+  this.open(this.custom.url, function(){
+    _me.echo(_me.getTitle());
+  });
 });
 
 casper.then(function(){
