@@ -3,9 +3,11 @@ var cDriver = new CDriver();
 var logger = require('../log/');
 
 var req = [{
-  url: "http://casperjs.org"
+  url: "http://www.macys.com"
 }, {
-  url: "https://www.google.com"
+  url: "http://www.bestbuy.com"
+}, {
+  url: "http://www.target.com"
 }];
 
 cDriver.run(req, function(err, data){

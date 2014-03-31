@@ -40,21 +40,26 @@ casper.options.pageSettings = casper.custom.config.options.pageSettings || {load
 casper.options.clientScripts = casper.custom.config.options.clientScripts || [];
 
 casper.customCache = function(){
+  if (!this.custom.token) this.custom.token = new Date().getTime();
   var path = casper.custom.config.debug.captureCache;
   if('undefined' === typeof(this.customSequence)){
     this.customSequence = 1;
   }
-  var screenshotFileName = path + '/snapshots/step-' + (this.customSequence) + '-';
-  screenshotFileName += (new Date()).toLocaleTimeString().replace(/[\/\s:]/g, '_') + '.png';
+  var filename = this.custom.token + '-step-' + this.customSequence++ + '-' + (new Date()).toLocaleTimeString().replace(/[\/\s:]/g, '_');
+  var screenshotFileName = path + '/snapshots/' + filename + '.png';
   this.capture(screenshotFileName);
-  var htmlFileName = path + '/html/step-' + (this.customSequence++) + '.html';
+  var htmlFileName = path + '/html/' + filename + '.html';
   var html = this.getHTML();
   if(html && fs){
     fs.write(htmlFileName, html, 'w');
   }
 };
 
-casper.start().then(function(){
+casper.start(function() {
+  this.custom.token = new Date().getTime();
+});
+
+casper.then(function(){
   var args = this.cli.args;
   if(!args || !args.length){
     utils.dump(args);
@@ -68,20 +73,18 @@ casper.start().then(function(){
 });
 
 casper.then(function(){
-  var _me = this;
-  this.open(this.custom.url, function(){
-    _me.echo(_me.getTitle());
-  });
+  this.open(this.custom.url);
 });
 
 casper.then(function(){
   // ready for scraping, capture first snapshot
   this.customCache();
+  this.echo("web page title = " + this.getTitle());
   var casperManager = new (require('./steps/index.js'))(this, {});
   casperManager.run();
 });
 
-// end of casperjs
 casper.run(function(){
-  this.echo('[DONE] Casperjs Scraping Process Complete').exit();
+  this.echo("elapsed time = " + (new Date().getTime() - this.custom.token) + "ms @" + this.custom.url);
+  this.exit();
 });
