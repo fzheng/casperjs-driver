@@ -78,13 +78,14 @@ casper.then(function(){
 });
 
 casper.thenEvaluate(function(){
-  window.socket = io.connect('http://localhost:29110');
-  window.socket.on('nodeMsg', function(data){
+  if (!window._socket) window._socket = io.connect('http://localhost:29110');
+  var socket = window._socket;
+  socket.on('from_node', function(data){
     console.log("<<< webpage at [" + document.location.href + "] get the message from node = " + JSON.stringify(data));
-    if(data.node === "copy"){
-      console.log("Roger that");
+    if(data.reply) {
+      socket.emit('from_casper', {body: 'Hello node, this is casper at ' + document.location.href, reply: true});
     } else {
-      socket.emit('htmlMsg', {casper: 'Hello node, this is casper at ' + document.location.href});
+      console.log("roger that");
     }
   });
 });
@@ -105,6 +106,20 @@ casper.then(function(){
   this.echo("web page title = " + this.getTitle());
   var casperManager = new (require('./steps/index.js'))(this, {});
   casperManager.run();
+});
+
+casper.thenEvaluate(function() {
+  window._socket.emit('from_casper', {body: 'Bye node, this is casper at ' + document.location.href, reply: false});
+});
+
+casper.then(function(){
+  for(var i = 0; i <= 1; i++){
+    this.wait(1000, (function(j){
+      return function(){
+        this.echo('Waiting ' + j);
+      };
+    })(i));
+  }
 });
 
 casper.run(function(){
