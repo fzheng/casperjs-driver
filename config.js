@@ -11,6 +11,7 @@ module.exports = {
         "loadPlugins": false
       },
       "clientScripts": [
+        "../node_modules/socket.io/node_modules/socket.io-client/dist/socket.io.min.js"
       ]
     },
     "debug": {

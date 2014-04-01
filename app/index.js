@@ -3,6 +3,7 @@
 var utils = require('utils');
 var fs = require('fs');
 var underscore = require('../vendor/underscore');
+var _config = require('../config')["casperSettings"];
 
 /**
  * casperjs starts
@@ -15,7 +16,8 @@ var casper = require("casper").create({
   onStepTimeout: function(self, m){
     casper.echo('Casperjs Step timeout: ' + m);
     casper.exit(103);
-  }
+  },
+  clientScripts: _config.options.clientScripts
 });
 
 casper.on('http.status.404', function(resource){
@@ -28,19 +30,18 @@ casper.on('page.error', function(msg, trace){
   this.echo("Page has errors: " + msg, "ERROR");
 });
 casper.on('remote.message', function(msg){
-  this.echo('remote message caught: ' + msg);
+  this.echo('Remote console log: ' + msg);
 });
 
 casper.custom = {};
-casper.custom.config = require('../config')["casperSettings"];
-casper.options.stepTimeout = casper.custom.config.options.stepTimeout || 30000;
-casper.options.retryTimeout = casper.custom.config.options.retryTimeout || 5;
-casper.options.verbose = casper.custom.config.options.verbose;
-casper.options.pageSettings = casper.custom.config.options.pageSettings || {loadImages: false, loadPlugins: false};
-casper.options.clientScripts = casper.custom.config.options.clientScripts || [];
+casper.custom.config = _config;
+casper.options.stepTimeout = _config.options.stepTimeout || 30000;
+casper.options.retryTimeout = _config.options.retryTimeout || 5;
+casper.options.verbose = _config.options.verbose;
+casper.options.pageSettings = _config.options.pageSettings || {loadImages: false, loadPlugins: false};
 
 casper.customCache = function(){
-  if (!this.custom.token) this.custom.token = new Date().getTime();
+  if(!this.custom.token) this.custom.token = new Date().getTime();
   var path = casper.custom.config.debug.captureCache;
   if('undefined' === typeof(this.customSequence)){
     this.customSequence = 1;
@@ -55,7 +56,7 @@ casper.customCache = function(){
   }
 };
 
-casper.start(function() {
+casper.start(function(){
   this.custom.token = new Date().getTime();
 });
 
@@ -74,6 +75,28 @@ casper.then(function(){
 
 casper.then(function(){
   this.open(this.custom.url);
+});
+
+casper.thenEvaluate(function(){
+  window.socket = io.connect('http://localhost:29110');
+  window.socket.on('nodeMsg', function(data){
+    console.log("<<< webpage at [" + document.location.href + "] get the message from node = " + JSON.stringify(data));
+    if(data.node === "copy"){
+      console.log("Roger that");
+    } else {
+      socket.emit('htmlMsg', {casper: 'Hello node, this is casper at ' + document.location.href});
+    }
+  });
+});
+
+casper.then(function(){
+  for(var i = 0; i <= 1; i++){
+    this.wait(1000, (function(j){
+      return function(){
+        this.echo('Waiting ' + j);
+      };
+    })(i));
+  }
 });
 
 casper.then(function(){
