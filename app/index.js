@@ -71,10 +71,7 @@ casper.then(function(){
   } catch(e) {
     this.die("JSON.parse error: " + utils.dump(args[0]), 105);
   }
-});
-
-casper.then(function(){
-  this.open(this.custom.url);
+  this.thenOpen(this.custom.url);
 });
 
 casper.thenEvaluate(function(){
