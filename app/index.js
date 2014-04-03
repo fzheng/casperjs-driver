@@ -1,9 +1,12 @@
 'use strict';
-
 var utils = require('utils');
 var fs = require('fs');
 var underscore = require('../vendor/underscore');
+var machina = require('../vendor/machina')();
 var _config = require('../config')["casperSettings"];
+
+var baseFsm = new machina.Fsm({});
+console.log(JSON.stringify(baseFsm));
 
 /**
  * casperjs starts
@@ -42,7 +45,8 @@ casper.options.pageSettings = _config.options.pageSettings || {loadImages: false
 
 casper.customCache = function(){
   if(!this.custom.token) this.custom.token = new Date().getTime();
-  var path = casper.custom.config.debug.captureCache;
+  if(!this.custom.config.debug.mode) return;
+  var path = this.custom.config.debug.captureCache;
   if('undefined' === typeof(this.customSequence)){
     this.customSequence = 1;
   }
@@ -101,7 +105,7 @@ casper.then(function(){
   // ready for scraping, capture first snapshot
   this.customCache();
   this.echo("web page title = " + this.getTitle());
-  var casperManager = new (require('./steps/index.js'))(this, {});
+  var casperManager = new (require('./steps/default.js'))(this, {});
   casperManager.run();
 });
 

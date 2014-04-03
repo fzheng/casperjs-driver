@@ -15,6 +15,7 @@ module.exports = {
       ]
     },
     "debug": {
+      "mode": false,
       "captureCache": "./out/captures"
     }
   },

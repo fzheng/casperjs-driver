@@ -1,7 +1,7 @@
 var CDriver = require('../');
 var cDriver = new CDriver();
-var logger = require('../log/');
-var req = require('./config.js');
+var logger = require('../log/logger');
+var req = require('./test_request.js');
 var util = require('util');
 
 cDriver.run(req, function(err, data){
