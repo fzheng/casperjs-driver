@@ -6,6 +6,8 @@ var machina = require('../vendor/machina')();
 var _config = require('../config')["casperSettings"];
 
 var baseFsm = new machina.Fsm({});
+var counter = 1200;
+var casperManager = {};
 console.log(JSON.stringify(baseFsm));
 
 /**
@@ -26,14 +28,30 @@ var casper = require("casper").create({
 casper.on('http.status.404', function(resource){
   this.echo('Error 404: ' + resource.url);
 });
+
 casper.on('http.status.500', function(resource){
   this.echo('Error 500: ' + resource.url);
 });
+
 casper.on('page.error', function(msg, trace){
   this.echo("Page has errors: " + msg, "ERROR");
 });
+
 casper.on('remote.message', function(msg){
-  this.echo('Remote console log: ' + msg);
+  try {
+    var data = JSON.parse(msg);
+    casperManager = new (require('./steps/manager.js'))(casper, {});
+    if(data && data.rlo && "function" === typeof(casperManager.run)){
+      if(data.body === "do macys search"){
+        counter = 0;
+        casperManager.run(function(){
+          // do something if needed
+        });
+      }
+    }
+  } catch(e) {
+    this.echo('Remote console log: ' + msg);
+  }
 });
 
 casper.custom = {};
@@ -66,7 +84,6 @@ casper.dumpSteps = function dumpSteps(showSource){
   this.echo("Next    step No. = " + (this.step + 1), "INFO");
   this.echo("steps.length = " + this.steps.length, "INFO");
   this.echo("================================================================================", "WARNING");
-
   for(var i = 0; i < this.steps.length; i++){
     var step = this.steps[i];
     var msg = "Step: " + (i + 1) + "/" + this.steps.length + "     level: " + step.level
@@ -76,7 +93,6 @@ casper.dumpSteps = function dumpSteps(showSource){
       color = "INFO";
       msg = msg + "     label: " + step.label
     }
-
     if(i == this.current){
       this.echo(msg + "     <====== Current Navigation Step.", "COMMENT");
     } else {
@@ -90,69 +106,65 @@ casper.dumpSteps = function dumpSteps(showSource){
   }
 };
 
+/**
+ * init setup
+ */
 casper.start(function(){
   this.custom.token = new Date().getTime();
-});
+}).then(function(){
+    var args = this.cli.args;
+    if(!args || !args.length){
+      utils.dump(args);
+      this.die("invalid command line argument", 107);
+    }
+    try {
+      this.custom = underscore.extend(this.custom, JSON.parse(args[0]));
+    } catch(e) {
+      this.die("JSON.parse error: " + utils.dump(args[0]), 105);
+    }
+    this.thenOpen(this.custom.url);
+  });
 
-casper.then(function(){
-  var args = this.cli.args;
-  if(!args || !args.length){
-    utils.dump(args);
-    this.die("invalid command line argument", 107);
-  }
-  try {
-    this.custom = underscore.extend(this.custom, JSON.parse(args[0]));
-  } catch(e) {
-    this.die("JSON.parse error: " + utils.dump(args[0]), 105);
-  }
-  this.thenOpen(this.custom.url);
-});
-
+/**
+ * socket.io client side setup
+ */
 casper.thenEvaluate(function(){
   if(!window._socket) window._socket = io.connect('http://localhost:29110');
   var socket = window._socket;
   socket.on('from_node', function(data){
-    console.log("<<< webpage at [" + document.location.href + "] get the message from node = " + JSON.stringify(data));
-    if(data.reply){
-      socket.emit('from_casper', {body: 'Hello node, this is casper at ' + document.location.href, reply: true});
-    } else {
-      console.log("roger that");
+    console.log(JSON.stringify(data));
+    if(data.needReply){
+      socket.emit('from_casper', {rlo: true, body: document.location.href, needReply: true});
     }
   });
 });
 
-casper.then(function(){
-  for(var i = 0; i <= 1; i++){
-    this.wait(1000, (function(j){
-      return function(){
-        this.echo('Waiting ' + j);
-      };
-    })(i));
-  }
-});
-
+/**
+ * casperManager setup
+ */
 casper.then(function(){
   // ready for scraping, capture first snapshot
   this.customCache();
   this.echo("web page title = " + this.getTitle());
-  var casperManager = new (require('./steps/default.js'))(this, {});
-  casperManager.run();
 });
 
-casper.thenEvaluate(function(){
-  window._socket.emit('from_casper', {body: 'Bye node, this is casper at ' + document.location.href, reply: false});
-});
-
+/**
+ * hang up casperjs process
+ */
 casper.then(function(){
-  for(var i = 0; i <= 1; i++){
-    this.wait(1000, (function(j){
-      return function(){
-        this.echo('Waiting ' + j);
-      };
-    })(i));
-  }
+  casper.repeat(counter, function(){});
 });
 
+/**
+ * farewell message
+ */
+casper.thenEvaluate(function(){
+  window._socket.emit('from_casper', {rlo: true, body: 'Bye node, this is casper at ' + document.location.href, needReply: false});
+});
+
+/**
+ * clean up
+ */
 casper.run(function(){
   this.echo("elapsed time = " + (new Date().getTime() - this.custom.token) + " ms @ " + this.custom.url);
 //  this.dumpSteps(true);
