@@ -11,12 +11,11 @@ module.exports = {
         "loadPlugins": false
       },
       "clientScripts": [
-        "../vendor/socket.io.min.js",
-        "../vendor/jquery-2.1.0.min.js"
+        "../vendor/socket.io.min.js", "../vendor/jquery-2.1.0.min.js"
       ]
     },
     "debug": {
-      "mode": false,
+      "mode": true,
       "captureCache": "./out/captures"
     }
   },

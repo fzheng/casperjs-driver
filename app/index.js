@@ -60,6 +60,36 @@ casper.customCache = function(){
   }
 };
 
+casper.dumpSteps = function dumpSteps(showSource){
+  this.echo("=========================== Dump Navigation Steps ==============================", "RED_BAR");
+  if(this.current){ this.echo("Current step No. = " + (this.current + 1), "INFO"); }
+  this.echo("Next    step No. = " + (this.step + 1), "INFO");
+  this.echo("steps.length = " + this.steps.length, "INFO");
+  this.echo("================================================================================", "WARNING");
+
+  for(var i = 0; i < this.steps.length; i++){
+    var step = this.steps[i];
+    var msg = "Step: " + (i + 1) + "/" + this.steps.length + "     level: " + step.level
+    if(step.executed){ msg = msg + "     executed: " + step.executed }
+    var color = "PARAMETER";
+    if(step.label){
+      color = "INFO";
+      msg = msg + "     label: " + step.label
+    }
+
+    if(i == this.current){
+      this.echo(msg + "     <====== Current Navigation Step.", "COMMENT");
+    } else {
+      this.echo(msg, color);
+    }
+    if(showSource){
+      this.echo("--------------------------------------------------------------------------------");
+      this.echo(this.steps[i]);
+      this.echo("================================================================================", "WARNING");
+    }
+  }
+};
+
 casper.start(function(){
   this.custom.token = new Date().getTime();
 });
@@ -79,11 +109,11 @@ casper.then(function(){
 });
 
 casper.thenEvaluate(function(){
-  if (!window._socket) window._socket = io.connect('http://localhost:29110');
+  if(!window._socket) window._socket = io.connect('http://localhost:29110');
   var socket = window._socket;
   socket.on('from_node', function(data){
     console.log("<<< webpage at [" + document.location.href + "] get the message from node = " + JSON.stringify(data));
-    if(data.reply) {
+    if(data.reply){
       socket.emit('from_casper', {body: 'Hello node, this is casper at ' + document.location.href, reply: true});
     } else {
       console.log("roger that");
@@ -109,7 +139,7 @@ casper.then(function(){
   casperManager.run();
 });
 
-casper.thenEvaluate(function() {
+casper.thenEvaluate(function(){
   window._socket.emit('from_casper', {body: 'Bye node, this is casper at ' + document.location.href, reply: false});
 });
 
@@ -125,5 +155,6 @@ casper.then(function(){
 
 casper.run(function(){
   this.echo("elapsed time = " + (new Date().getTime() - this.custom.token) + " ms @ " + this.custom.url);
+//  this.dumpSteps(true);
   this.exit();
 });
