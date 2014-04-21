@@ -6,7 +6,7 @@ var machina = require('../vendor/machina')();
 var _config = require('../config')["casperSettings"];
 
 var baseFsm = new machina.Fsm({});
-var counter = 1200;
+var turnoff = false;
 var casperManager = {};
 console.log(JSON.stringify(baseFsm));
 
@@ -42,8 +42,8 @@ casper.on('remote.message', function(msg){
     var data = JSON.parse(msg);
     casperManager = new (require('./steps/manager.js'))(casper, {});
     if(data && data.rlo && "function" === typeof(casperManager.run)){
-      if(data.body === "do macys search"){
-        counter = 0;
+      if(data.body === "do search"){
+        turnoff = true;
         casperManager.run(function(){
           // do something if needed
         });
@@ -122,7 +122,11 @@ casper.start(function(){
     } catch(e) {
       this.die("JSON.parse error: " + utils.dump(args[0]), 105);
     }
-    this.thenOpen(this.custom.url);
+    var _me = this;
+    this.thenOpen(this.custom.url, function() {
+      _me.customCache();
+      _me.echo("web page title = " + _me.getTitle());
+    });
   });
 
 /**
@@ -140,33 +144,20 @@ casper.thenEvaluate(function(){
 });
 
 /**
- * casperManager setup
+ * hangup, timeout 30 min
  */
-casper.then(function(){
-  // ready for scraping, capture first snapshot
-  this.customCache();
-  this.echo("web page title = " + this.getTitle());
-});
-
-/**
- * hang up casperjs process
- */
-casper.then(function(){
-  casper.repeat(counter, function(){});
-});
-
-/**
- * farewell message
- */
-casper.thenEvaluate(function(){
-  window._socket.emit('from_casper', {rlo: true, body: 'Bye node, this is casper at ' + document.location.href, needReply: false});
-});
+casper.waitFor(function check() {
+  return turnoff;
+}, function then() {
+  this.echo("move on to turn off");
+}, function timeout() {
+  this.echo("the casper process has been idle as long as 30 minutes, hang up now");
+}, 1800000);
 
 /**
  * clean up
  */
 casper.run(function(){
   this.echo("elapsed time = " + (new Date().getTime() - this.custom.token) + " ms @ " + this.custom.url);
-//  this.dumpSteps(true);
   this.exit();
 });

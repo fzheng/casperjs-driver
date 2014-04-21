@@ -2,9 +2,17 @@
 
 module.exports = [
   {
-    url: "http://www.macys.com"
+    merchantName: "macys",
+    url: "http://www.macys.com",
+    item: {
+      id: 1297383
+    }
   },
   {
-    url: "http://www.bestbuy.com"
+    merchantName: "bestbuy",
+    url: "http://www.bestbuy.com",
+    item: {
+      id: 6238297
+    }
   }
 ];

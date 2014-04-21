@@ -40,6 +40,7 @@ module.exports = {
     "117": "",
     "118": "",
     "119": "",
-    "120": ""
+    "120": "",
+    "122": "Sorry, failed to open product detail page, the product may not exist"
   }
 };
