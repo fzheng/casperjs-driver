@@ -1,5 +1,9 @@
 Casperjs Driver (Node.js)
 =======
 
-TODO
-----
+```bash
+$ npm install
+$ npm test
+$ ls out/captures
+```
+---

@@ -1,15 +1,15 @@
 'use strict';
 
-function CasperManager(casperObj, config){
+function CasperManager (casperObj, config) {
   this.casper = casperObj;
   return this;
 }
 
-CasperManager.prototype.run = function(){
+CasperManager.prototype.run = function () {
   this.Done();
 };
 
-CasperManager.prototype.Done = function(){
+CasperManager.prototype.Done = function () {
   this.casper.customCache();
 };
 

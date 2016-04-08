@@ -4,4 +4,4 @@
  * bridge to import npm module and export it out to casper script
  * @type {exports}
  */
-module.exports = require('underscore');
+module.exports = require('lodash');

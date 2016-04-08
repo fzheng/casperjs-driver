@@ -1,10 +1,11 @@
 {
   "name": "CasperjsDriver",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Using node.js to drive casperjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "preinstall": "npm install -g casperjs && npm install -g phantomjs-prebuilt",
+    "test": "node tests/index.js"
   },
   "repository": {
     "type": "git",
@@ -14,14 +15,14 @@
     "node"
   ],
   "author": "Feng Zheng",
-  "license": "BSD-2-Clause",
+  "license": "ISC",
   "bugs": {
     "url": "https://github.com/fzheng/casperjs-driver/issues"
   },
   "dependencies": {
     "casperjs": "^1.1.0-beta5",
+    "lodash": "^4.9.0",
     "socket.io": "^0.9.17",
-    "underscore": "^1.6.0",
     "winston": "^0.7.3"
   }
 }
