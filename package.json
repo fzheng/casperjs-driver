@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/fzheng/sandbox.git"
+    "url": "git@github.com:fzheng/casperjs-driver.git"
   },
   "keywords": [
     "node"
@@ -16,12 +16,12 @@
   "author": "Feng Zheng",
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/fzheng/sandbox/issues"
+    "url": "https://github.com/fzheng/casperjs-driver/issues"
   },
   "dependencies": {
-    "casperjs": "~1.1.0-beta3",
-    "winston": "~0.7.3",
-    "underscore": "~1.6.0",
-    "socket.io": "~0.9.16"
+    "casperjs": "^1.1.0-beta5",
+    "socket.io": "^0.9.17",
+    "underscore": "^1.6.0",
+    "winston": "^0.7.3"
   }
 }
