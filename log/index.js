@@ -26,4 +26,9 @@ var logger = new (winston.Logger)({
   exitOnError: false
 });
 
-module.exports = logger;
+module.exports = {
+  error: logger.error,
+  warn: logger.warn,
+  info: logger.info,
+  debug: logger.debug
+};

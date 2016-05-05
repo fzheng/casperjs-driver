@@ -5,30 +5,33 @@ var utils = require('utils');
 var fs = require('fs');
 var _config = require('../config')["casperSettings"];
 
-/**
- * casperjs starts
- */
+// casperjs starts
 var casper = require("casper").create({
   onError: function (self, m) {
     casper.echo('Casperjs onError: ' + m);
     casper.exit(102);
   },
+
   onStepTimeout: function (self, m) {
     casper.echo('Casperjs Step timeout: ' + m);
     casper.exit(103);
   },
+
   clientScripts: _config.options.clientScripts
 });
 
 casper.on('http.status.404', function (resource) {
   this.echo('Error 404: ' + resource.url);
 });
+
 casper.on('http.status.500', function (resource) {
   this.echo('Error 500: ' + resource.url);
 });
+
 casper.on('page.error', function (msg, trace) {
   this.echo("Page has errors: " + msg, "ERROR");
 });
+
 casper.on('remote.message', function (msg) {
   this.echo('Remote console log: ' + msg);
 });
@@ -83,7 +86,7 @@ casper.thenEvaluate(function () {
   }
   var socket = window._socket;
   socket.on('from_node', function (data) {
-    console.log("<<< webpage at [" + document.location.href + "] get the message from node = " + JSON.stringify(data));
+    console.log("website at [" + document.location.href + "] get the message from node = " + JSON.stringify(data));
     if (data.reply) {
       socket.emit('from_casper', {
         body: 'Hello node, this is casper at ' + document.location.href,
@@ -109,7 +112,7 @@ casper.then(function () {
   // ready for scraping, capture first snapshot
   this.customCache();
   this.echo("web page title = " + this.getTitle());
-  var casperManager = new (require('./steps/index.js'))(this, {});
+  var casperManager = new (require('./casperManager.js'))(this, {});
   casperManager.run();
 });
 

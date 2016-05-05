@@ -12,10 +12,11 @@
     "url": "git@github.com:fzheng/casperjs-driver.git"
   },
   "keywords": [
-    "node"
+    "node",
+    "casper"
   ],
   "author": "Feng Zheng",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/fzheng/casperjs-driver/issues"
   },

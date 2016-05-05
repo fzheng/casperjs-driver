@@ -1,12 +1,12 @@
 'use strict';
 
-var CDriver = require('../');
-var cDriver = new CDriver();
-var logger = require('../log/');
-var req = require('./config.js');
-var util = require('util');
+const util = require('util');
+const logger = require('../log/');
+const Driver = require('../');
+const driver = new Driver();
+const req = require('./sample_request');
 
-cDriver.run(req, function(err, data){
+driver.execute(req, function(err, data){
   if(err) {
     logger.error("Test console received error = "  + util.inspect(err));
   } else {

@@ -1,3 +1,3 @@
 'use strict';
 
-module.exports = require('./lib/driver.js');
+module.exports = require('./src/driver');

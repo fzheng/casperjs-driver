@@ -19,7 +19,7 @@ module.exports = {
     }
   },
   "loopSleepTime": 1000,
-  "_errors": {
+  "errors": {
     "101": "Uncaught exception",
     "102": "Runtime error in casper process",
     "103": "Timeout exception in casper process",
