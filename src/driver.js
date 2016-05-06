@@ -66,7 +66,7 @@ function CasperDriver () {
       reqStr
     ]);
 
-    children[childIndex].stdout.setEncoding('utf8');
+    // children[childIndex].stdout.setEncoding('utf8');
 
     // if we get any data from the child, simply output it
     children[childIndex].stdout.on('data', function (data) {
