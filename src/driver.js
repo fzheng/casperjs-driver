@@ -25,7 +25,7 @@ function CasperDriver () {
 
   let socket = undefined;
 
-  const respond = function (code, message) {
+  function respond(code, message) {
     const error = new Error();
     error.code = code || 101;
     error.message = "";
@@ -37,9 +37,9 @@ function CasperDriver () {
     }
     logger.error('[CasperDriver.respond] ' + error.message);
     return error;
-  };
+  }
 
-  const spawn_child = function (childIndex, cb) {
+  function spawn_child(childIndex, cb) {
     /**
      * spawn children
      * @param childIndex {number} - index of casper child
@@ -92,7 +92,7 @@ function CasperDriver () {
           timeStamp: Date.now()
         };
       }
-      if (!childrenActive) {
+      if (childrenActive === 0) {
         const error = new Error();
         error.message = [];
         const data = [];
@@ -105,15 +105,16 @@ function CasperDriver () {
           }
         }
         if (error.code) {
-          return cb(error, null);
+          cb(error, null);
         } else {
-          return cb(null, data);
+          cb(null, data);
         }
+        exit();
       }
     });
-  };
+  }
 
-  const tearDown = function (cb) {
+  function tearDown(cb) {
     /**
      * Tear down all spawned children processes
      * @param cb {function} - callback function
@@ -125,21 +126,19 @@ function CasperDriver () {
       }
     }
     cb(null, "All processes have been cleaned up. now exit.");
-  };
+  }
 
-  const exit = function () {
+  function exit() {
     /**
      * Exit
      */
-    setTimeout(function () {
-      logger.info("server socket is about to close");
-      if (socket) {
-        socket.disconnect();
-        socket = undefined;
-      }
-      process.exit();
-    }, 100);
-  };
+    logger.info("server socket is about to close");
+    if (socket) {
+      socket.disconnect();
+      socket = undefined;
+    }
+    process.exit();
+  }
 
   self.execute = function (req, cb) {
     /**
