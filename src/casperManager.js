@@ -1,7 +1,7 @@
 'use strict';
 
 function CasperManager (casperObj, config) {
-  var self = this;
+  const self = this;
 
   self.casper = casperObj;
 

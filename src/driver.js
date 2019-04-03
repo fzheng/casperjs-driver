@@ -2,7 +2,6 @@
 
 const util = require('util');
 const path = require('path');
-const fs = require('fs');
 const config = require('../config');
 const logger = require('../log/');
 const spawn = require('child_process').spawn;

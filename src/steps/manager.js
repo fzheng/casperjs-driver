@@ -1,7 +1,6 @@
 'use strict';
 
 function CasperManager(casperObj, config){
-  'use strict';
   this.casper = casperObj;
   this.config = config;
   return this;
@@ -9,9 +8,9 @@ function CasperManager(casperObj, config){
 
 CasperManager.prototype.run = function(cb){
   'use strict';
-  var _me = this;
-  var self = this.casper;
-  var id = self.custom.item.id;
+  const _me = this;
+  const self = this.casper;
+  const id = self.custom.item.id;
 
   if (self.custom && self.custom.merchantName === "macys") {
     self.thenEvaluate(function(keyword){

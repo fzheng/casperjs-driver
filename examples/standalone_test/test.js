@@ -1,8 +1,8 @@
 "use strict";
 
-var config = require('./config');
+const config = require('./config');
 
-var casper = require('casper').create({
+const casper = require('casper').create({
   verbose: true,
   logLevel: 'debug',
   pageSettings: {
@@ -10,7 +10,7 @@ var casper = require('casper').create({
     loadPlugins: false         // use these settings
   },
   clientScripts: [
-    '../../vendor/jquery-2.1.0.min.js',
+    '../../vendor/jquery.min.js',
     '../../vendor/socket.io.min.js'
   ]
 });
