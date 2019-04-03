@@ -11,36 +11,20 @@ module.exports = {
         "loadPlugins": false
       },
       "clientScripts": [
-        "../vendor/socket.io.min.js", "../vendor/jquery-2.1.0.min.js"
+        "../node_modules/socket.io/node_modules/socket.io-client/dist/socket.io.min.js"
       ]
     },
     "debug": {
-      "mode": true,
       "captureCache": "./out/captures"
     }
   },
   "loopSleepTime": 1000,
-  "_errors": {
+  "errors": {
     "101": "Uncaught exception",
     "102": "Runtime error in casper process",
     "103": "Timeout exception in casper process",
     "104": "JSON stringify exception",
     "105": "JSON parse exception",
-    "106": "",
-    "107": "IllegalArgumentException",
-    "108": "",
-    "109": "",
-    "110": "",
-    "111": "",
-    "112": "",
-    "113": "",
-    "114": "",
-    "115": "",
-    "116": "",
-    "117": "",
-    "118": "",
-    "119": "",
-    "120": "",
-    "122": "Sorry, failed to open product detail page, the product may not exist"
+    "107": "IllegalArgumentException"
   }
 };
