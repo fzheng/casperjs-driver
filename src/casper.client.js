@@ -52,7 +52,7 @@ casper.customCache = function () {
   if (this.customSequence === undefined) {
     this.customSequence = 1;
   }
-  var filename = this.custom.token + '-step-' + this.customSequence++ + '-' + (new Date()).toLocavarimeString().replace(/[\/\s:]/g, '_');
+  var filename = this.custom.token + '-step-' + this.customSequence++ + '-' + (new Date()).toLocaleTimeString().replace(/[\/\s:]/g, '_');
   var screenshotFileName = path + '/snapshots/' + filename + '.png';
   this.capture(screenshotFileName);
   var htmlFileName = path + '/html/' + filename + '.html';

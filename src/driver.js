@@ -73,7 +73,7 @@ function CasperDriver() {
     children[childIndex] = spawn('casperjs', [
       '--web-security=no',
       '--ignore-ssl-errors=yes',
-      path.join(__dirname, './casperApp.js'),
+      path.join(__dirname, './casper.client.js'),
       reqStr
     ]);
 
