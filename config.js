@@ -8,15 +8,15 @@ module.exports = {
       verbose: true,
       pageSettings: {
         loadImages: true,
-        loadPlugins: false
+        loadPlugins: false,
       },
       clientScripts: [
-        '../node_modules/socket.io-client/dist/socket.io.js'
-      ]
+        '../node_modules/socket.io-client/dist/socket.io.js',
+      ],
     },
     debug: {
-      captureCache: './out/captures'
-    }
+      captureCache: './out/captures',
+    },
   },
   loopSleepTime: 1000,
   errors: {
@@ -25,6 +25,6 @@ module.exports = {
     103: 'Timeout exception in casper process',
     104: 'JSON stringify exception',
     105: 'JSON parse exception',
-    107: 'IllegalArgumentException'
-  }
+    107: 'IllegalArgumentException',
+  },
 };
