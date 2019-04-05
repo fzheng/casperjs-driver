@@ -2,17 +2,17 @@
 
 const util = require('util');
 const path = require('path');
+const { spawn } = require('child_process');
+const io = require('socket.io').listen(29110, { log: false });
+
 const config = require('../config');
 const logger = require('../log/');
-const spawn = require('child_process').spawn;
-const io = require('socket.io').listen(29110, {log: false});
 
-
-function CasperDriver () {
-  /**
-   * Casper Driver
-   * @constructor
-   */
+/**
+ * Casper Driver
+ * @constructor
+ */
+function CasperDriver() {
   const self = this;
 
   let reqQueue = [];
@@ -22,32 +22,44 @@ function CasperDriver () {
   let childrenCount = 0;
   let childrenActive = 0;
 
-  let socket = undefined;
+  let socket;
 
-  function respond(code, message) {
+  const respond = (code, message) => {
     const error = new Error();
     error.code = code || 101;
-    error.message = "";
+    error.message = '';
     if (config && config.errors) {
       error.message += config.errors[code];
     }
     if (message) {
-      error.message += "-" + util.inspect(message);
+      error.message += `-${util.inspect(message)}`;
     }
-    logger.error('[CasperDriver.respond] ' + error.message);
+    logger.error(`[CasperDriver.respond] ${error.message}`);
     return error;
-  }
+  };
 
-  function spawn_child(childIndex, cb) {
-    /**
-     * spawn children
-     * @param childIndex {number} - index of casper child
-     * @param cb {function} - callback function
-     */
-    logger.info('Spawning child, sequence number: ' + childIndex);
+  /**
+   * Exit
+   */
+  const exit = () => {
+    logger.info('server socket is about to close');
+    if (socket) {
+      socket.disconnect();
+      socket = undefined;
+    }
+    process.exit();
+  };
+
+  /**
+   * spawn children
+   * @param childIndex {number} - index of casper child
+   * @param cb {function} - callback function
+   */
+  const spawnChild = (childIndex, cb) => {
+    logger.info(`Spawning child, sequence number: ${childIndex}`);
 
     if (childIndex < childrenCount - 1 && children[childIndex + 1] === undefined) {
-      spawn_child(childIndex + 1, cb);
+      spawnChild(childIndex + 1, cb);
     }
 
     let reqStr;
@@ -59,8 +71,8 @@ function CasperDriver () {
 
     // spawn the child
     children[childIndex] = spawn('casperjs', [
-      "--web-security=no",
-      "--ignore-ssl-errors=yes",
+      '--web-security=no',
+      '--ignore-ssl-errors=yes',
       path.join(__dirname, './casperApp.js'),
       reqStr
     ]);
@@ -68,18 +80,18 @@ function CasperDriver () {
     // children[childIndex].stdout.setEncoding('utf8');
 
     // if we get any data from the child, simply output it
-    children[childIndex].stdout.on('data', function (data) {
-      logger.info('Child [' + childIndex + ']: ' + data);
+    children[childIndex].stdout.on('data', (data) => {
+      logger.info(`Child [${childIndex}]: ${data}`);
     });
 
     // output any errors
-    children[childIndex].stderr.on('data', function (data) {
-      logger.error('Child [' + childIndex + '] Error: ' + data);
+    children[childIndex].stderr.on('data', (data) => {
+      logger.error(`Child [${childIndex}] Error: ${data}`);
     });
 
     // if we detect the child has quit, we want ensure we have cleaned everything we need to up
-    children[childIndex].on('exit', function (code) {
-      logger.info('Child [' + childIndex + '] exits: ' + code);
+    return children[childIndex].on('exit', (code) => {
+      logger.info(`Child [${childIndex}] exits: ${code}`);
       childrenActive--;
       resQueue[childIndex] = {};
       if (code) {
@@ -111,41 +123,29 @@ function CasperDriver () {
         exit();
       }
     });
-  }
+  };
 
-  function tearDown(cb) {
-    /**
-     * Tear down all spawned children processes
-     * @param cb {function} - callback function
-     */
+  /**
+   * Tears down all spawned children processes
+   * @param cb {function} - callback function
+   */
+  const tearDown = (cb) => {
     for (let i = 0; i < childrenCount; ++i) {
       if (children[i] !== undefined) {
-        logger.info("Kill child [" + i + "], pid = [" + children[i].pid + "]");
+        logger.info(`Kill child [${i}], pid = [${children[i].pid}]`);
         children[i].kill();
       }
     }
-    cb(null, "All processes have been cleaned up. now exit.");
-  }
+    cb(null, 'All processes have been cleaned up. now exit.');
+  };
 
-  function exit() {
-    /**
-     * Exit
-     */
-    logger.info("server socket is about to close");
-    if (socket) {
-      socket.disconnect();
-      socket = undefined;
-    }
-    process.exit();
-  }
-
-  self.execute = function (req, cb) {
-    /**
-     * Run the driver
-     * @param req {object} - request object
-     * @param cb {function} - callback function
-     */
-    if (!req || typeof(req) !== "object") {
+  /**
+   * Run the driver
+   * @param req {object} - request object
+   * @param cb {function} - callback function
+   */
+  self.execute = (req, cb) => {
+    if (!req || typeof (req) !== 'object') {
       logger.error('Invalid request object');
       return cb(respond(107, req), null);
     }
@@ -164,29 +164,29 @@ function CasperDriver () {
     resQueue = new Array(requestCount);
     childrenCount = requestCount;
     childrenActive = requestCount;
-    spawn_child(0, cb);
+    spawnChild(0, cb);
 
     // detect and report if parent exited
-    process.on("exit", function () {
-      logger.info("Parent process exiting");
+    process.on('exit', () => {
+      logger.info('Parent process exiting');
       tearDown(cb);
     });
 
     // detect and report if parent was killed
-    process.on("SIGTERM", function () {
-      logger.info("Parent SIGTERM detected");
+    process.on('SIGTERM', () => {
+      logger.info('Parent SIGTERM detected');
       exit();
     });
 
     let counter = childrenCount;
-    io.sockets.on('connection', function (s) {
+    return io.sockets.on('connection', (s) => {
       socket = s;
       socket.emit('from_node', {
-        body: "Hello from node",
+        body: 'Hello from node',
         reply: true
       });
-      socket.on('from_casper', function (data) {
-        logger.info("node driver.js received msg: " + JSON.stringify(data));
+      socket.on('from_casper', (data) => {
+        logger.info(`node driver.js received msg: ${JSON.stringify(data)}`);
         if (data.reply) {
           socket.emit('from_node', {
             body: 'Nice to meet you',
@@ -196,8 +196,8 @@ function CasperDriver () {
           logger.info('roger that');
         }
       });
-      socket.on('disconnect', function () {
-        logger.info("socket in child process disconnected, " + --counter + " left");
+      socket.on('disconnect', () => {
+        logger.info(`socket in child process disconnected, ${--counter} left`);
         if (counter <= 0) {
           exit();
         }

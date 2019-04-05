@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
 module.exports = [
   {
-    url: "https://www.sephora.com"
+    url: 'https://www.sephora.com',
   },
   {
-    url: "https://www.bestbuy.com"
-  }
+    url: 'https://www.bestbuy.com',
+  },
 ];
