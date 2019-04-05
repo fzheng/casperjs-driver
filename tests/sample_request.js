@@ -1,10 +1,16 @@
-"use strict";
+'use strict';
 
 module.exports = [
   {
-    url: "http://www.sephora.com"
+    url: 'https://www.apple.com',
   },
   {
-    url: "http://www.staples.com"
-  }
+    url: 'https://www.amazon.com',
+  },
+  {
+    url: 'https://www.nytimes.com',
+  },
+  {
+    url: 'https://en.wikipedia.org/wiki/Main_Page',
+  },
 ];

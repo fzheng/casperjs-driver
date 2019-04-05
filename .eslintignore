@@ -1,0 +1,4 @@
+vendor/*
+src/casper.client.js
+src/casper.manager.js
+out/*
