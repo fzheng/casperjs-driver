@@ -23,7 +23,7 @@
   "dependencies": {
     "casperjs": "^1.1.4",
     "lodash": "^4.17.21",
-    "socket.io": "^2.2.0",
+    "socket.io": "^2.5.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
