@@ -22,8 +22,8 @@
   },
   "dependencies": {
     "casperjs": "^1.1.4",
-    "lodash": "^4.17.11",
-    "socket.io": "^2.2.0",
+    "lodash": "^4.17.21",
+    "socket.io": "^2.5.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
@@ -31,7 +31,7 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-security": "^1.4.0",
-    "grunt": "^1.0.4",
+    "grunt": "^1.5.3",
     "grunt-env": "^0.4.4",
     "grunt-eslint": "^21.0.0",
     "grunt-exec": "^3.0.0"
